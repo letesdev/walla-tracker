@@ -1,6 +1,6 @@
 # Configuration
 
-The worker is configured via environment variables. Copy `.env.example` to `.env` inside the `worker/` directory and edit the values before running.
+The worker is configured via environment variables. Copy `.env.example` to `.env` and edit the values before running.
 
 ---
 
@@ -8,18 +8,20 @@ The worker is configured via environment variables. Copy `.env.example` to `.env
 
 | Variable | Default | Description |
 |---|---|---|
-| `MONGODB_URI` | `mongodb://localhost:27000/wallapop_tracker` | Full MongoDB connection string |
+| `DB_URI` | _(required)_ | Neon PostgreSQL connection string |
 | `WALLAPOP_API_BASE_URL` | _(required)_ | Base URL for the Wallapop v3 API |
 | `WALLAPOP_API_KEY` | _(optional)_ | Bearer token. Sent as `Authorization` header when set |
 | `WALLAPOP_USER_AGENT` | `USER_AGENT` | `User-Agent` header value sent to the API |
 | `POLL_INTERVAL_SECONDS` | `300` | How often the worker polls, in seconds (5 min default) |
 | `LOG_LEVEL` | `info` | Pino log level: `trace`, `debug`, `info`, `warn`, `error` |
 
+`DB_URI` must be a valid Neon connection string. You can find it in the Neon console under **Connection Details**. Use the **pooled** connection string for the worker.
+
 ---
 
 ## Search defaults
 
-When a search document is missing a field, the worker falls back to these values (defined in `worker/src/defaults.ts`):
+When a search row is missing a field, the worker falls back to these values (defined in `src/defaults.ts`):
 
 | Field | Default value | Notes |
 |---|---|---|
@@ -30,47 +32,23 @@ When a search document is missing a field, the worker falls back to these values
 | `distance_in_km` | `100` | Search radius |
 | `pageSize` | `50` | Max results per poll (also the API page size) |
 
-Change the code-level defaults in `worker/src/defaults.ts`, or override them per search by setting the fields in the `searches` document.
+Change the code-level defaults in `src/defaults.ts`, or override them per search via the `searches` table.
 
 ---
 
-## Docker (MongoDB)
-
-MongoDB is configured in `docker-compose.yml`:
-
-```yaml
-services:
-  mongo:
-    image: mongo:7
-    ports:
-      - "27000:27017"          # host:container
-    environment:
-      MONGO_INITDB_DATABASE: wallapop_tracker
-    volumes:
-      - ./data/db:/data/db     # persistent local storage
-```
-
-Run with:
-
-```bash
-docker-compose up -d    # start in background
-docker-compose down     # stop (data is preserved)
-```
-
----
-
-## Worker scripts
-
-All scripts are run from inside the `worker/` directory.
+## Scripts
 
 | Command | What it does |
 |---|---|
 | `pnpm run dev` | Start the worker with hot-reload (development) |
 | `pnpm start` | Start the compiled worker (production) |
 | `pnpm run once` | Run one poll and exit |
-| `pnpm run seed-search` | Insert a search into the database (see below) |
+| `pnpm run seed-search` | Insert a search row into the database |
 | `pnpm run build` | Compile TypeScript to `dist/` |
 | `pnpm run typecheck` | Type-check without emitting files |
+| `pnpm run db:push` | Push current schema to Neon (development / first setup) |
+| `pnpm run db:generate` | Generate a SQL migration file |
+| `pnpm run db:migrate` | Apply pending migrations |
 
 ### `seed-search` arguments
 
@@ -84,18 +62,14 @@ pnpm run seed-search \
   --maxResults=100
 ```
 
-All arguments are optional except `keywords`. Unset arguments fall back to the defaults table above. The script refuses to insert a duplicate (same keywords + location + order).
+All arguments are optional except `keywords`. Unset arguments fall back to the defaults table above. The script refuses to insert a duplicate (same `query` + `order_by`).
 
 ---
 
 ## Pausing a search
 
-Set `status: "inactive"` on a `searches` document. The worker will skip it on every poll until you remove or change the field.
-
-```js
-// MongoDB shell
-db.searches.updateOne(
-  { query: "Garmin Fenix 6" },
-  { $set: { status: "inactive" } }
-)
+```sql
+UPDATE searches SET status = 'inactive' WHERE query = 'Garmin Fenix 6';
 ```
+
+The worker skips any row with `status = 'inactive'` on every poll.
