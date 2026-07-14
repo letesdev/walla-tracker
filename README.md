@@ -1,27 +1,40 @@
-# Wallapop Tracker — Local dev
+# Wallapop Tracker
 
-Quick start for the database and worker skeleton.
+Self-hosted tool that watches Wallapop listings and tracks price changes over time.
 
-Prerequisites:
-- Docker / Docker Compose
-- pnpm
+---
 
-Run MongoDB (Docker):
+## Monorepo structure
 
-```bash
-docker-compose up -d
+```
+wallapop-tracker/
+  api/        Node.js background worker + PostgreSQL schema (Neon + Drizzle)
+  app/        Web frontend (coming soon)
 ```
 
-Worker (development):
+Each package is independent. Navigate into the package you want to work on.
+
+---
+
+## api — Background worker
+
+Polls the Wallapop API on a schedule, persists listings to a PostgreSQL database on Neon, and tracks price changes over time.
 
 ```bash
-cd worker
+cd api
+cp .env.example .env    # set DB_URI and WALLAPOP_API_BASE_URL
 pnpm install
-cp .env.example .env
-# configure .env (MONGODB_URI, WALLAPOP_API_BASE_URL, WALLAPOP_API_KEY if available)
-pnpm run dev
+pnpm run db:push        # create tables on first run
+pnpm run seed-search --keywords="Garmin Fenix 6"
+pnpm run dev            # continuous polling
+# or
+pnpm run once           # single poll then exit
 ```
 
-Notes:
-- Mongo runs on `mongodb://localhost:27000` by default.
-- The worker contains a polling skeleton; configure the Wallapop API details to enable real requests.
+Full docs: [`api/docs/`](api/docs/README.md)
+
+---
+
+## app — Frontend
+
+> Not yet implemented. Will be added in a separate branch.

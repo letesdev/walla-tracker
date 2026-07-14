@@ -4,9 +4,9 @@
   "private": true,
   "type": "commonjs",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/api/index.ts",
-    "once": "ts-node src/api/once.ts",
-    "seed-search": "ts-node src/api/scripts/seed-search.ts",
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "once": "ts-node src/once.ts",
+    "seed-search": "ts-node src/scripts/seed-search.ts",
     "build": "tsc -p tsconfig.json",
     "start": "node dist/index.js",
     "typecheck": "tsc --noEmit",
