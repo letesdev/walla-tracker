@@ -1,31 +1,17 @@
 {
-  "name": "wallapop-tracker-worker",
+  "name": "wallapop-tracker",
   "version": "0.1.0",
   "private": true,
-  "type": "commonjs",
+  "description": "Self-hosted Wallapop search and price tracker. Packages are independent; these scripts delegate to api/.",
   "scripts": {
-    "dev": "ts-node-dev --respawn --transpile-only src/api/index.ts",
-    "once": "ts-node src/api/once.ts",
-    "seed-search": "ts-node src/api/scripts/seed-search.ts",
-    "build": "tsc -p tsconfig.json",
-    "start": "node dist/index.js",
-    "typecheck": "tsc --noEmit",
-    "db:push": "drizzle-kit push",
-    "db:generate": "drizzle-kit generate",
-    "db:migrate": "drizzle-kit migrate"
-  },
-  "dependencies": {
-    "dotenv": "^16.3.1",
-    "drizzle-orm": "^0.45.2",
-    "pino": "^8.15.0",
-    "postgres": "^3.4.9"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.3",
-    "@types/node": "^20.7.2",
-    "drizzle-kit": "^0.31.10",
-    "ts-node": "^10.9.1",
-    "ts-node-dev": "^2.0.0",
-    "typescript": "^5.4.0"
+    "dev": "pnpm -C api run dev",
+    "once": "pnpm -C api run once",
+    "seed-search": "pnpm -C api run seed-search",
+    "build": "pnpm -C api run build",
+    "start": "pnpm -C api run start",
+    "typecheck": "pnpm -C api run typecheck",
+    "db:push": "pnpm -C api run db:push",
+    "db:generate": "pnpm -C api run db:generate",
+    "db:migrate": "pnpm -C api run db:migrate"
   }
 }

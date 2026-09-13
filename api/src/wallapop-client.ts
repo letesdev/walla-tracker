@@ -17,7 +17,7 @@ export class WallapopClient {
 
   constructor(baseUrl: string, apiKey?: string) {
     // default to the v3 API base
-    this.baseUrl = baseUrl || 'http://api.wallapop.com/api/v3'
+    this.baseUrl = baseUrl || 'https://api.wallapop.com/api/v3'
     this.apiKey = apiKey
     this.headers = {
       'User-Agent': process.env.WALLAPOP_USER_AGENT || 'USER_AGENT',
