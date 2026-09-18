@@ -37,4 +37,11 @@ Full docs: [`api/docs/`](api/docs/README.md)
 
 ## app — Frontend
 
-> Not yet implemented. Will be added in a separate branch.
+A Next.js full-stack dashboard. Server Components read the shared Drizzle schema directly; the background poller remains independent.
+
+```bash
+cd app
+cp .env.example .env.local
+pnpm install
+pnpm dev
+```

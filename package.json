@@ -1,17 +1,12 @@
 {
-  "name": "wallapop-tracker",
+  "name": "walla-tracker",
   "version": "0.1.0",
   "private": true,
-  "description": "Self-hosted Wallapop search and price tracker. Packages are independent; these scripts delegate to api/.",
+  "workspaces": ["api", "app"],
   "scripts": {
-    "dev": "pnpm -C api run dev",
-    "once": "pnpm -C api run once",
-    "seed-search": "pnpm -C api run seed-search",
-    "build": "pnpm -C api run build",
-    "start": "pnpm -C api run start",
-    "typecheck": "pnpm -C api run typecheck",
-    "db:push": "pnpm -C api run db:push",
-    "db:generate": "pnpm -C api run db:generate",
-    "db:migrate": "pnpm -C api run db:migrate"
+    "build": "npm run build --workspace=api && npm run build --workspace=app",
+    "typecheck": "npm run typecheck --workspace=api && npm run typecheck --workspace=app",
+    "dev:api": "npm run dev --workspace=api",
+    "dev:app": "npm run dev --workspace=app"
   }
 }
