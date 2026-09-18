@@ -6,7 +6,14 @@
   "scripts": {
     "build": "npm run build --workspace=api && npm run build --workspace=app",
     "typecheck": "npm run typecheck --workspace=api && npm run typecheck --workspace=app",
+    "dev": "npm run dev --workspace=api",
     "dev:api": "npm run dev --workspace=api",
-    "dev:app": "npm run dev --workspace=app"
+    "dev:app": "npm run dev --workspace=app",
+    "once": "npm run once --workspace=api",
+    "seed-search": "npm run seed-search --workspace=api",
+    "start": "npm run start --workspace=api",
+    "db:push": "npm run db:push --workspace=api",
+    "db:generate": "npm run db:generate --workspace=api",
+    "db:migrate": "npm run db:migrate --workspace=api"
   }
 }

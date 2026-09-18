@@ -1,6 +1,8 @@
 import { Sparkline } from '@/components/sparkline'
 import { getSearchSummaries } from '@/lib/searches'
 
+export const dynamic = 'force-dynamic'
+
 const euro = new Intl.NumberFormat('es-ES', { style: 'currency', currency: 'EUR', maximumFractionDigits: 0 })
 
 export default async function SearchesPage() {
