@@ -22,7 +22,16 @@ const demo: SearchSummary[] = [
 
 export async function getSearchSummaries(): Promise<SearchSummary[]> {
   if (!db) return demo
-  const rows = await db
+  try {
+    return await querySearchSummaries()
+  } catch (error) {
+    console.error('getSearchSummaries: fallo al leer la base de datos, uso datos demo', error)
+    return demo
+  }
+}
+
+async function querySearchSummaries(): Promise<SearchSummary[]> {
+  const rows = await db!
     .select({
       id: searches.id,
       query: searches.query,
