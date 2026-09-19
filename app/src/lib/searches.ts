@@ -22,15 +22,24 @@ const demo: SearchSummary[] = [
 
 export async function getSearchSummaries(): Promise<SearchSummary[]> {
   if (!db) return demo
-  const rows = await db
+  try {
+    return await querySearchSummaries()
+  } catch (error) {
+    console.error('getSearchSummaries: fallo al leer la base de datos, uso datos demo', error)
+    return demo
+  }
+}
+
+async function querySearchSummaries(): Promise<SearchSummary[]> {
+  const rows = await db!
     .select({
       id: searches.id,
       query: searches.query,
       status: searches.status,
       products: sql<number>`count(distinct ${products.id})`,
-      averagePrice: sql<number>`coalesce(avg(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
-      minPrice: sql<number>`coalesce(min(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
-      maxPrice: sql<number>`coalesce(max(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
+      averagePrice: sql<number>`coalesce(avg(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
+      minPrice: sql<number>`coalesce(min(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
+      maxPrice: sql<number>`coalesce(max(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
     })
     .from(searches)
     .leftJoin(products, eq(products.searchId, searches.id))
