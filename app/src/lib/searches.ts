@@ -37,9 +37,9 @@ async function querySearchSummaries(): Promise<SearchSummary[]> {
       query: searches.query,
       status: searches.status,
       products: sql<number>`count(distinct ${products.id})`,
-      averagePrice: sql<number>`coalesce(avg(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
-      minPrice: sql<number>`coalesce(min(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
-      maxPrice: sql<number>`coalesce(max(case when ${productPrices.isLatest} then nullif(${productPrices.price}, '')::numeric end), 0)`,
+      averagePrice: sql<number>`coalesce(avg(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
+      minPrice: sql<number>`coalesce(min(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
+      maxPrice: sql<number>`coalesce(max(case when ${productPrices.isLatest} then nullif(split_part(${productPrices.price}, ' ', 1), '')::numeric end), 0)`,
     })
     .from(searches)
     .leftJoin(products, eq(products.searchId, searches.id))
